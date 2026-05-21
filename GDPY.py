@@ -3,21 +3,20 @@ import sys
 import os
 import math
 from Giocatore import *
+from Geometria import *
+from Livello import *
 import time
 
 os.environ['SDL_VIDEO_CENTERED'] = "1"
 FPS = 60
-DEBUG = False
-
-spikes = [
-    {"x":400},{"x",800}
-]
+IMG_DIR = "./images/"
 
 class GDPY():
     def __init__(self):
         self.info = {"maxx":1800,"maxy":800}
         self.screen = pygame.display.set_mode((self.info["maxx"],self.info["maxy"]))
         pygame.display.set_caption("GDPY")
+        self.bgColor = (255,255,255)
         self.creaPlayer()
         self.creaOstacoli()
         self.running = True
@@ -28,74 +27,72 @@ class GDPY():
         while self.running:
             for event in pygame.event.get():
                 self.gestisciEvento(event)
-            print(self.p.rx,self.p.ry)
-            self.disegna()
+            print(self.p.vy)
+            self.muoviBack()
             self.p.movimenti()
             self.checkCollisioni()
+            self.disegna()
             pygame.display.flip()
             self.clock.tick(FPS)
         pygame.quit()
         sys.exit()
 
     def disegna(self):
-        self.disegnaBackG(not DEBUG)
+        self.disegnaBackG()
         self.disegnaPlayer()
         self.disegnaOstacoli()
     
-    def disegnaBackG(self,cond):
-        if cond:
-            self.screen.fill((255,255,255))
-        
+    def disegnaBackG(self):
+        self.screen.fill(self.bgColor)
     
     def disegnaPlayer(self):
         self.screen.blit(self.playerImg, (self.p.x,self.p.y))
 
     def disegnaOstacoli(self):
-        for i in self.ostacoli:
-            self.screen.blit(i.get("img"),(i.get("x"),i.get("y")))
+        for i in self.spikes:
+            self.screen.blit(i.img,(i.a.x,i.a.y))
         for i in self.blocks:
-            self.screen.blit(i.get("img"),(i.get("x"),i.get("y")))
-
+            self.screen.blit(i.img,(i.a.x,i.a.y))
 
     def creaOstacoli(self):
-        self.infoSpikes = [
-            {"img":"./images/Spike.png","x":600,"y":self.info["maxy"]-100},
-            {"img":"./images/Spike.png","x":1100,"y":self.info["maxy"]-100}
-        ]
-        self.ostacoli = []
-        for i in self.infoSpikes:
-            nom = i.get("img")
-            el = pygame.image.load(nom)
-            self.ostacoli.append({"img":el,"x":i.get("x"),"y":i.get("y")})
-        
-        self.infoBlocks = [
-            {"img":"./images/Block.png","x":700,"y":self.info["maxy"]-100},
-            {"img":"./images/Block.png","x":800,"y":self.info["maxy"]-100},
-        ]
+        self.livello = Livello("first",self.info["maxy"])
+        self.oggetti = self.livello.carica()
+        self.spikes = []
         self.blocks = []
-        for i in self.infoBlocks:
+        for i in self.oggetti:
             nom = i.get("img")
-            el = pygame.image.load(nom)
-            self.blocks.append({"img":el,"x":i.get("x"),"y":i.get("y")})
-    
+            el = pygame.image.load(IMG_DIR+nom)
+            if nom == "Spike.png":
+                self.spikes.append(Spike(i["x"],i["y"],el))
+            elif nom == "Block.png":
+                self.blocks.append(Blocco(i["x"],i["y"],el))
+
     def creaPlayer(self):
-        self.p = Giocatore("./images/Cube.png",100,100,0,self.info["maxy"]-100,self.info["maxx"],self.info["maxy"])
+        self.p = Giocatore("./images/Cube.png",100,100,300,self.info["maxy"]-100,self.info["maxx"],self.info["maxy"])
         self.playerImg = pygame.image.load(self.p.img)
 
     def checkCollisioni(self):
-        for i in self.infoSpikes:
-            ostx , osty = i.get("x") , i.get("y")
-            if self.p.rx > ostx and self.p.x < ostx+100 and self.p.ry > osty:   #collisione con lo spike
+        for i in self.spikes:
+            if i.collisione(self.p):
                 self.perdi()
-        c = 0
-        for i in self.infoBlocks:
-            ostx , osty = i.get("x") , i.get("y")
-            if self.p.ry > osty and self.p.rx > ostx and self.p.x < ostx+100:       #collisione col blocco
+        maxy = self.info["maxy"]
+        for i in self.blocks:
+            tip = i.collisione(self.p)
+            #print(tip)
+            if tip[0]:
                 self.perdi()
-            elif self.p.ry < osty and self.p.rx > ostx:         #va sopra il blocco
-                self.p.maxy = osty     
-            
+            else:
+                maxy = min(maxy,tip[1])
+        self.p.maxy = maxy
+        print(f"{self.p.x} {self.p.ry} con maxy {maxy}")
 
+    def muoviBack(self):
+        v = self.p.mods[self.p.mod]["vx"]
+        for i in self.blocks:
+            i.muoviY(v)
+        for i in self.spikes:
+            i.muoviY(v)
+    
     def gestisciEvento(self,event):
         #print(event)
         if event.type == pygame.QUIT:
@@ -110,8 +107,11 @@ class GDPY():
         e = event.text
         if e == " " and self.p.aTerra:
             self.p.jump()
+        if e == "r":
+            self.perdi()
     
     def perdi(self):
-        time.sleep(2)
-        self.p.indietro()
-        self.disegnaBackG(True)
+        time.sleep(0.5)
+        self.creaOstacoli()
+        self.p.muori()
+        self.disegnaBackG()
