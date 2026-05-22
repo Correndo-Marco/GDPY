@@ -29,10 +29,10 @@ class Blocco(Oggetto):
         super().__init__(x,y,x+100,y+100,x,y,x+100,y+100,100,img)
     
     def collisione(self,p):
-        if p.rx > self.a.x and p.rx < self.b.x:
-            if p.ry < self.a.y:
+        if p.rx > self.a.x and p.x < self.b.x:
+            if p.ry <= self.a.y and p.x < self.b.x:
                 return [False,self.a.y]
             elif p.ry > self.a.y and p.y < self.b.y:
                 return [True,p.originalMaxy]
         return [False,p.originalMaxy]
-        
+    

@@ -10,6 +10,7 @@ import time
 os.environ['SDL_VIDEO_CENTERED'] = "1"
 FPS = 60
 IMG_DIR = "./images/"
+OPTIMIZED = True
 
 class GDPY():
     def __init__(self):
@@ -27,7 +28,6 @@ class GDPY():
         while self.running:
             for event in pygame.event.get():
                 self.gestisciEvento(event)
-            print(self.p.vy)
             self.muoviBack()
             self.p.movimenti()
             self.checkCollisioni()
@@ -68,24 +68,36 @@ class GDPY():
                 self.blocks.append(Blocco(i["x"],i["y"],el))
 
     def creaPlayer(self):
-        self.p = Giocatore("./images/Cube.png",100,100,300,self.info["maxy"]-100,self.info["maxx"],self.info["maxy"])
+        self.p = Giocatore(100,100,300,self.info["maxy"]-100,self.info["maxx"],self.info["maxy"])
         self.playerImg = pygame.image.load(self.p.img)
 
     def checkCollisioni(self):
+        conto = 0
         for i in self.spikes:
+            if OPTIMIZED:
+                if i.a.x > self.p.x + 100:      #se troppo avanti
+                    continue
+                elif self.p.x > i.b.x + 100:    #se troppo indietro
+                    continue
+            conto += 1
             if i.collisione(self.p):
                 self.perdi()
         maxy = self.info["maxy"]
         for i in self.blocks:
+            if OPTIMIZED:
+                if i.a.x > self.p.x + 100:
+                    continue
+                elif self.p.x > i.b.x + 100:
+                    continue
+            conto += 1
             tip = i.collisione(self.p)
-            #print(tip)
             if tip[0]:
                 self.perdi()
             else:
                 maxy = min(maxy,tip[1])
         self.p.maxy = maxy
-        print(f"{self.p.x} {self.p.ry} con maxy {maxy}")
-
+        print(f"{self.p.x} {self.p.ry} con maxy {maxy} e salta:{self.p.aTerra} e mod:{self.p.mod}")
+        print(f"Checkati {conto} oggetti")
     def muoviBack(self):
         v = self.p.mods[self.p.mod]["vx"]
         for i in self.blocks:
@@ -94,7 +106,6 @@ class GDPY():
             i.muoviY(v)
     
     def gestisciEvento(self,event):
-        #print(event)
         if event.type == pygame.QUIT:
             self.running = False
         elif event.type == pygame.KEYDOWN:
@@ -105,13 +116,16 @@ class GDPY():
             
     def gestisciInput(self,event):
         e = event.text
-        if e == " " and self.p.aTerra:
-            self.p.jump()
+        if e == " ":
+            self.p.agisci()
         if e == "r":
             self.perdi()
     
     def perdi(self):
         time.sleep(0.5)
         self.creaOstacoli()
+        self.playerImg = pygame.image.load(self.p.img)
         self.p.muori()
+        time.sleep(0.1)
         self.disegnaBackG()
+        self.disegnaPlayer()
