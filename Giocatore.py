@@ -1,52 +1,70 @@
+IMG_DIR = "./images"
+
 class Giocatore():
-    def __init__(self,dimx,dimy,x,y,maxx,maxy):
-        self.dimx = dimx
-        self.dimy = dimy
+    def __init__(self,maxx,maxy,mod):
+        self.dimx = 100
+        self.dimy = 100
         self.maxx = maxx
         self.maxy = maxy
         self.originalMaxy = maxy
-        self.x = x
-        self.y = y
+        self.x = 300
+        self.y = self.maxy - self.dimy
         self.rx = self.x + self.dimx    #vertice vero sotto destra
         self.ry = self.y + self.dimy    #vertice vero sotto destra
-        self.mod = "Ufo"
-        self.mods = {
-            "Cube" : {"vx":10,"vy":-30,"g":1.7,"img":"./images/Cube.png"},
-            "Ufo" : {"vx":10,"vy":-25,"g":1.5,"img":"./images/Ufo.png"}
+        self.mod = mod
+        self.modes = {
+            "Cube" : {"vx":10,"vy":-30,"g":1.7,"img":f"{IMG_DIR}/Cube.png"},
+            "Ufo" : {"vx":10,"vy":-25,"g":1.5,"img":f"{IMG_DIR}/Ufo.png"}
             }
         self.resetImg()
-        self.azzeraVelocita()
+        self.resettaVelocita()
         self.aTerra = True
     
     def changeATerra(self):
         self.aTerra = True if self.ry == self.maxy else False
 
+    def resettaVelocita(self):
+        self.vy = self.modes[self.mod].get("vy")
+
     def azzeraVelocita(self):
-        self.vy = self.mods[self.mod].get("vy")
+        self.vy = 0
+
+    def aggiornaVertici(self):
+        self.ry = self.y + self.dimy
+
+    def aggiornaY(self):
+        self.y += self.vy
 
     def subisciG(self):
-        self.vy += self.mods[self.mod].get("g")
+        maxvy = abs(self.modes[self.mod].get("vy"))      #conto della massima velocità
+        if self.vy < maxvy:
+            self.vy += self.modes[self.mod].get("g")
+        else:
+            self.vy = maxvy
     
-    def agisci(self):
+    def agisci(self,mode):
+        self.changeATerra()
         if self.mod == "Cube" and self.aTerra:
             self.jump()
         elif self.mod == "Ufo":
-            self.jump()
+            if mode == "C":
+                self.jump()
 
     def jump(self):
-        self.azzeraVelocita()
-        self.y += self.vy
+        self.resettaVelocita()
+        self.aggiornaY()
         self.subisciG()
-        self.ry = self.y + self.dimy
+        self.aggiornaVertici()
         self.changeATerra()
     
     def cadi(self):
-        self.y += self.vy
+        self.aggiornaY()
         if self.y > self.maxy - self.dimy:
             self.y = self.maxy - self.dimy
+            self.azzeraVelocita()
         else:
             self.subisciG()
-        self.ry = self.y + self.dimy
+        self.aggiornaVertici()
         self.changeATerra()
             
     def movimenti(self):
@@ -56,10 +74,11 @@ class Giocatore():
         if self.ry < self.maxy:
             self.cadi()
         else:
-            self.vy = 0
+            self.azzeraVelocita()
+        
         if self.y < 0:
             self.y = 0
-            self.vy = 0
+            self.azzeraVelocita()
     
     def resetPos(self):
         self.y = self.maxy - self.dimy
@@ -67,15 +86,15 @@ class Giocatore():
     def muori(self):
         self.maxy = self.originalMaxy
         self.resetPos()
-        self.vy = 0
+        self.azzeraVelocita()
     
     def resetImg(self):
-        self.img = self.mods[self.mod].get("img")
+        self.img = self.modes[self.mod].get("img")
 
-    def toggleMod(self):
-        if self.mod == "Cube":
-            self.mod = "Ufo"
-        else:
-            self.mod = "Cube"
-        self.resetImg()
+    def toggleMod(self,mod):
+        if mod == self.mod:
+            return
+        if mod in self.modes.keys():
+            self.mod = mod
+            self.resetImg()
         
