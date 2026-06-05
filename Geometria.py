@@ -41,5 +41,7 @@ class Portale(Oggetto):
     
     def collisione(self,p):
         if p.rx > self.a.x and p.rx < self.b.x:
-            return True
+            if p.ry > self.a.y and p.y < self.b.y:
+                return True
+    
     

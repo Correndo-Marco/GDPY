@@ -14,12 +14,14 @@ IMG_DIR = "./images/"
 
 class GDPY():
     def __init__(self):
+        pygame.init()
         self.info = {"maxx":1800,"maxy":800}
         self.screen = pygame.display.set_mode((self.info["maxx"],self.info["maxy"]))
         pygame.display.set_caption("GDPY")
         self.gestore = GestoreLvl(self.info["maxy"])
         self.bgColor = (255,255,255)
         self.nomeLivello = "first"
+        self.font = pygame.font.SysFont("arial",24)
         self.attemptCount = 1
         self.creaOstacoli()
         self.creaPlayer()
@@ -47,6 +49,9 @@ class GDPY():
     
     def disegnaBackG(self):
         self.screen.fill(self.bgColor)
+        self.screen.blit(self.font.render(f"{self.attemptCount} attempts",True,"black"),(10,50))
+        self.screen.blit(self.font.render(f"{int(self.clock.get_fps())} FPS",True,"black"),(10,0))
+
     
     def disegnaPlayer(self):
         self.screen.blit(self.playerImg, (self.p.x,self.p.y))
@@ -63,7 +68,6 @@ class GDPY():
         self.livello = self.gestore.livelli.get(self.nomeLivello)
         self.oggetti = self.livello.livello
         self.winCount = len(self.oggetti)
-        print(self.oggetti)
         self.spikes = []
         self.blocks = []
         self.portali = []

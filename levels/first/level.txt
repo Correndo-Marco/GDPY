@@ -1,22 +1,22 @@
 x
+x
 
 
-
+x
 x
 c
 c
 c
-x
-xc
- c
- c
- c
- c
- c
- c
-x
-x
-
+cx
+cx
+cc
+ cx
+ cx
+cc
+cx
+cx 
+c
+c
 
 pu
 
@@ -33,9 +33,9 @@ x
 x
 x
 
-
-
-cccpc
+  c
+  c
+cccpcccc
 
 
 
@@ -45,10 +45,32 @@ x
 xc
 xc
 x
-x
-x
+
+
+
+
 x
 xc
 xc
 x
 
+
+
+pu
+
+
+
+
+
+
+cccccx
+     x
+     x
+     x
+     x
+     x
+     x  
+cccccc
+     c
+     c
+     c
