@@ -1,8 +1,8 @@
 x
-x
 
 
-x
+
+
 x
 c
 c
@@ -10,29 +10,29 @@ c
 cx
 cx
 cc
- cx
- cx
+cc
+cc
 cc
 cx
-cx 
+cx
 c
 c
 
 pu
 
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
 
+x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+  c
   c
   c
 cccpcccc
@@ -64,13 +64,23 @@ pu
 
 
 cccccx
-     x
-     x
-     x
-     x
-     x
-     x  
+    cx
+    cx
+    cx
+    cx
+    cx
+    cx
 cccccc
-     c
-     c
-     c
+    c
+    c
+    c
+
+
+
+
+
+ cccccccccc
+
+
+cc
+

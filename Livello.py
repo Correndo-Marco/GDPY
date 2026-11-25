@@ -1,7 +1,7 @@
 import json
 
 OFFSET_LVL = 1000
-LVL_DIR = "./levels"
+LVL_DIR = "levels"
 
 class Livello():
     def __init__(self,nomeDir,maxy):

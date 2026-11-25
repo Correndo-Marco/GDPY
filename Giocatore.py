@@ -1,4 +1,7 @@
-IMG_DIR = "./images"
+from os import path
+
+IMG_DIR = "/images"
+GD_DIR = path.dirname(path.abspath(__file__))
 
 class Giocatore():
     def __init__(self,maxx,maxy,mod):
@@ -13,8 +16,8 @@ class Giocatore():
         self.ry = self.y + self.dimy    #vertice vero sotto destra
         self.mod = mod
         self.modes = {
-            "Cube" : {"vx":10,"vy":-30,"g":1.7,"img":f"{IMG_DIR}/Cube.png"},
-            "Ufo" : {"vx":10,"vy":-25,"g":1.5,"img":f"{IMG_DIR}/Ufo.png"}
+            "Cube" : {"vx":10,"vy":-30,"g":1.7,"img":f"{GD_DIR}/{IMG_DIR}/Cube.png"},
+            "Ufo" : {"vx":10,"vy":-25,"g":1.5,"img":f"{GD_DIR}/{IMG_DIR}/Ufo.png"}
             }
         self.resetImg()
         self.resettaVelocita()

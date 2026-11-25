@@ -10,7 +10,8 @@ import time
 os.environ['SDL_VIDEO_CENTERED'] = "1"
 
 FPS = 60
-IMG_DIR = "./images/"
+IMG_DIR = "images/"
+GD_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class GDPY():
     def __init__(self):
@@ -73,7 +74,7 @@ class GDPY():
         self.portali = []
         for i in self.oggetti:
             nom = i.get("img")
-            el = pygame.image.load(IMG_DIR+nom)
+            el = pygame.image.load(GD_DIR+"/"+IMG_DIR+nom)
             if nom == "Spike.png":
                 self.spikes.append(Spike(i["x"],i["y"],el))
             elif nom == "Block.png":
@@ -136,21 +137,26 @@ class GDPY():
         return conto == self.winCount
 
     def gestisciEvento(self,event):
+        #print(event)
         if event.type == pygame.QUIT:
             self.running = False
         elif event.type == pygame.KEYDOWN:
-            if event.unicode == "\x1b":
+            if event.unicode == "":
+                self.gestisciInput(event,"C")
+            elif event.unicode == "\x1b":
                 self.running = False
             elif event.unicode == " ":
                 self.gestisciInput(event,"C")
-        elif event.type == pygame.TEXTINPUT:    
+        elif event.type == pygame.TEXTINPUT:
             self.gestisciInput(event,"P")
             
     def gestisciInput(self,event,tipo):
-        e = event.text if tipo == "P" else event.unicode
+        e = event.text if tipo == "P" else (event.unicode if event.unicode != "" else event.key)
         if e == "r":
             self.perdi()
         if e == " ":
+            self.p.agisci(tipo)
+        if e == 1073741906:
             self.p.agisci(tipo)
     
     def togglePMod(self,mode):
