@@ -10,8 +10,9 @@ import time
 os.environ['SDL_VIDEO_CENTERED'] = "1"
 
 FPS = 60
-IMG_DIR = "images/"
 GD_DIR = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = f"{GD_DIR}/images/"
+OFFSET_CHECK = 120  #distanza da cui si inizia a controllare collisione
 
 class GDPY():
     def __init__(self):
@@ -74,7 +75,7 @@ class GDPY():
         self.portali = []
         for i in self.oggetti:
             nom = i.get("img")
-            el = pygame.image.load(GD_DIR+"/"+IMG_DIR+nom)
+            el = pygame.image.load(IMG_DIR+nom)
             if nom == "Spike.png":
                 self.spikes.append(Spike(i["x"],i["y"],el))
             elif nom == "Block.png":
@@ -89,9 +90,9 @@ class GDPY():
     def checkCollisioni(self):
         conto = 0
         for i in self.spikes:
-            if i.a.x > self.p.x + 150:      #se troppo avanti
+            if i.a.x > self.p.x + OFFSET_CHECK:      #se troppo avanti
                 continue
-            elif self.p.x > i.b.x + 150:    #se troppo indietro
+            elif self.p.x > i.b.x + OFFSET_CHECK:    #se troppo indietro
                 conto += 1
                 continue
             if i.collisione(self.p):
@@ -99,9 +100,9 @@ class GDPY():
         maxy = self.info["maxy"]
 
         for i in self.blocks:
-            if i.a.x > self.p.x + 150:
+            if i.a.x > self.p.x + OFFSET_CHECK:
                 continue
-            elif self.p.x > i.b.x + 150:
+            elif self.p.x > i.b.x + OFFSET_CHECK:
                 conto += 1
                 continue
             tip = i.collisione(self.p)
@@ -112,9 +113,9 @@ class GDPY():
         self.p.maxy = maxy
 
         for i in self.portali:
-            if i.a.x > self.p.x + 150:
+            if i.a.x > self.p.x + OFFSET_CHECK:
                 continue
-            elif self.p.x > i.b.x + 150:
+            elif self.p.x > i.b.x + OFFSET_CHECK:
                 conto += 1
                 continue
             if i.collisione(self.p) and self.p.mod != i.mode:
